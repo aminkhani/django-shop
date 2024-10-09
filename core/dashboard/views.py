@@ -6,13 +6,14 @@ from accounts.models import UserType
 
 
 class DashboardHomeView(LoginRequiredMixin,View):
-    
+
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             if request.user.type == UserType.customer.value:
                 return redirect(reverse_lazy('dashboard:customer:home'))
-            if request.user.type == UserType.admin.value:
-                return redirect(reverse_lazy('dashboard:admin:home'))
+            if self.request.user.type == UserType.admin.value or \
+               self.request.user.type == UserType.superuser.value:
+                   return redirect(reverse_lazy('dashboard:admin:home'))
         else:
             return redirect(reverse_lazy('accounts:login'))
         return super().dispatch(request, *args, **kwargs)
